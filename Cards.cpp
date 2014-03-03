@@ -3,14 +3,21 @@
 #include <time.h>
 #include <math.h>                        // function for ceiling and floor that was recommended
 #include <string>                        // include string 
+
 using namespace std; 
 
 
 struct CARD {                           // initialize Deck
 	int value;
 	char suit;
-} DECK[52],TEMP[52];                             //  Create array which will store the deck.
+	CARD() : value(), suit() {}               // constructor
+	CARD(int v, int s) : value(v), suit(s){}
+}DECK[52];                             //  Create array which will store the deck.
 
+struct HAND {                         // players hands
+	int value; 
+	char suit; 
+ }HandA[5], HandB[5];
 
 void CreateDeck(){
 
@@ -49,35 +56,74 @@ void CreateDeck(){
 	}
 }
 
-
-void ShuffleDeck(){                                // generate two random numbers which will represent the indices of DECK which will be swapped with each other
+void ShuffleDeck()
+{                                // generate two random numbers which will represent the indices of DECK which will be swapped with each other
+	int tempValue;
+	char tempSuit; 
 	srand(time(0));
-	for (int j = 1; j <= 52; j++){
+	for (int j = 1; j <= 52; j++)
+	{
 		int i = rand() % 52 + 1;
-		int k = rand() % 52 + 1; 
+		int k = rand() % 52 + 1;
 
-		TEMP[i].value = DECK[i].value;            // place cards in temporary deck
-		TEMP[i].suit = DECK[i].suit;
-		TEMP[k].value = DECK[k].value;
-		TEMP[k].suit = DECK[k].suit;
-		
-		DECK[i].value = TEMP[k].value;          // cards swapped 
-		DECK[i].suit = TEMP[k].suit;
-		DECK[k].value = TEMP[i].value;
-		DECK[k].suit = TEMP[i].suit;
+		tempValue = DECK[i].value;            // place cards in temporary deck
+		tempSuit= DECK[i].suit;
+		DECK[i].value = DECK[k].value;
+		DECK[i].suit = DECK[k].suit;
+		DECK[k].value = tempValue; 
+		DECK[k].suit = tempSuit; 
 	}
 }
-void PrintDeck(){
 
-	for (int j = 1; j <= 52; j++){
-		cout << DECK[j].value << DECK[j].suit << endl; 
+void PrintDeck()
+{
+		for (int j = 1; j <= 52; j++)
+		{
+			cout << DECK[j].value << DECK[j].suit << endl;
+		}
+}
+
+void DealHands()
+{
+	int j = 1 , k = 1;
+	for (int i = 1; i <= 10; i++){                         // this represents the dealer dealing to the hand every other card
+		if ((i % 2) == 0){
+			HandA[j].value = DECK[i].value;
+			HandA[j].suit = DECK[i].suit;
+			j++; 
+		}
+		else 
+		{
+			HandB[k].value = DECK[i].value;
+			HandB[k].suit = DECK[i].suit;
+			k++; 
+		}
+
+		DECK[i].suit = NULL; 
+		DECK[i].value = NULL;
 	}
+}
+
+void PrintHands()
+{
+	cout << endl;
+	for (int t = 1; t <= 5; t++){
+		cout << HandA[t].value << HandA[t].suit << endl;
+	}
+	cout << endl;
+	for (int t = 1; t <= 5; t++){
+		cout << HandB[t].value << HandB[t].suit << endl;
+	}
+
 }
 
 int main(){
+
 	CreateDeck();
 	ShuffleDeck();
-	PrintDeck(); 
+	//PrintDeck(); 
+	DealHands(); 
+	PrintHands(); 
 
 	cin.get();
 	return 0; 
