@@ -5,7 +5,8 @@
 #include <string>                        // include string 
 
 using namespace std; 
-
+void SortHands(); 
+void ShiftDeck(); 
 
 struct CARD {                           // initialize Deck
 	int value;
@@ -98,12 +99,36 @@ void DealHands()
 			HandB[k].suit = DECK[i].suit;
 			k++; 
 		}
-
 		DECK[i].suit = NULL; 
 		DECK[i].value = NULL;
+
 	}
 }
+void SortHands()                                 // sort hands A and B to make it easier for determining hand. Method Insertion Sort
+{
 
+
+}
+
+void ShiftDeck()
+{
+	int temp = 0;
+	int j = 0; 
+	for (int i = 1; i <= 52; i++)
+	{
+		
+		if (DECK[i].value == 0) // count zeroes
+		{
+			temp++;
+		}
+		else
+		{
+			DECK[i - temp].value = DECK[i].value;
+			DECK[i - temp].suit = DECK[i].suit;
+		}
+	}
+	
+}
 void PrintHands()
 {
 	cout << endl;
@@ -121,9 +146,12 @@ int main(){
 
 	CreateDeck();
 	ShuffleDeck();
-	//PrintDeck(); 
+	PrintDeck(); 
 	DealHands(); 
-	PrintHands(); 
+	cout << endl; 
+	//PrintHands(); 
+	ShiftDeck(); 
+	PrintDeck();
 
 	cin.get();
 	return 0; 
