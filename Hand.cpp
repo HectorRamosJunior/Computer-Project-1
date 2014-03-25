@@ -2,27 +2,22 @@
 #include <stdlib.h>                      // for rand function
 #include <time.h>
 #include <math.h>                        // function for ceiling and floor that was recommended
-#include <string>                        // include string 
+//#include <string>                        // include string 
 #include "hand.h"						 // includes the header file
 
 using namespace std;
 
-Hand::Hand() : value(10), suit(10) {    //Hand Constructor, Initializes Vector Lengths, Set score to one to signify high card
-	createHand();
+Hand::Hand(int i) : value(5), suit(5), bucketVector(13) {    //Hand Constructor, Initializes Vector Lengths, Set score to one to signify high card
 	score = 1; 
+	playerNumber = i;
 }
 
-
-void Hand::createHand(){
-			
-}
 
 void Hand::addCards(Deck deck, int startIndex) {         // This function adds cards to the Hand object. 
 
 	int j = startIndex;
 
-	for (int i = 0; i < 10; i++){
-
+	for (int i = 0; i < 5; i++){
 		value.at(i) = deck.value.at(j);
 		suit.at(i) = deck.suit.at(j);
 		j = j + 2;                                       // A startIndex variable is used to simulate a dealer dealing cards in an alternating
@@ -30,15 +25,16 @@ void Hand::addCards(Deck deck, int startIndex) {         // This function adds c
 	                                                     // startIndex of 0 and 1 is passed to player 1 and 2 respectively. 
 }
 
+
 void Hand::sortHand()
 {                                          // This function uses insertion sort, to sort the hand. This makes it easier to store
 										   // the cards in the buckets. 
 	int i, j;
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < 5; i++)
 	{
 		for (j = 0; j < i; j++)
 		{
-			if (value.at(i) < value.at(j))  // Explanation:  
+			if (value.at(i) < value.at(j))  
 			{
 				int temp = value.at(i);     //swap 
 				int tempC = suit.at(i);
@@ -53,11 +49,14 @@ void Hand::sortHand()
 
 void Hand::printHand()                                          // This function prints the users hand. 
 {
-	for (int i = 0; i < 10; i++)
+	cout << "Player " << playerNumber << "'s hand:" << endl;
+
+	for (int i = 0; i < 5; i++)
 	{
-		std:: cout << value.at(i) << suit.at(i) << endl;
+		if(i < 4) 	cout << value.at(i) << suit.at(i) << ", ";
+		else cout << value.at(i) << suit.at(i) << ".";
 	}
-	std:: cout << endl << endl << endl;
+	cout << endl << endl;
 }
 
 void Hand::determineHand()
@@ -69,13 +68,13 @@ void Hand::determineHand()
 	This will help the program determine the hands much easier.
 	Refer to references where this idea came from.
 	*/
-	vector<int> bucketVector;                                     // initialize bucket vector of length 13 with 0's
-	bucketVector.assign(13, 0);
+
+	score = 1; // For any future use, resets the score
 
 	for (int j = 0; j < bucketVector.size(); j++)
 	{
 		int counter = 0;
-		for (int i = 0; i < 10; i++){                             // search the players hand and store the instances
+		for (int i = 0; i < 5; i++){                             // search the players hand and store the instances
 																  // that each card occurs in the corresponding bucket.
 			if (value.at(i) == j+1)                               // we set the value equal to j+1 because our vector places
 			{													  // index from 0 to 12, however our values from ace to king
@@ -101,11 +100,11 @@ void Hand::determineHand()
 
 		*/
 
-	int suitS = 0;                                               // this code is used to determine flushes. We are counting the instances
-	int suitC = 0;                                               // at which each suit occurs in a hand. 
-	int suitH = 0;
-	int suitD = 0;
-	for (int i = 0; i < 10; i++)                     
+	suitS = 0;                                               // this code is used to determine flushes. We are counting the instances
+	suitC = 0;                                               // at which each suit occurs in a hand. 
+	suitH = 0;
+	suitD = 0;
+	for (int i = 0; i < 5; i++)                     
 	{
 		if (suit.at(i) == 'S'){ suitS++; }
 		if (suit.at(i) == 'C'){ suitC++; }
@@ -198,8 +197,138 @@ void Hand::determineHand()
 	}
 
 
-	std:: cout << score; 
-
-	std:: cout << suitS << suitD << suitC << suitH << endl;
+	cout << "Player " << playerNumber << " has a hand ranked " << score << " out of 10." << endl; 
+	//cout << suitS << suitD << suitC << suitH << endl;
 	
+}
+
+int Hand::drawCards(Deck deck)
+{
+	/*Scoring System assigned to hands:
+		Royal Flush:    10
+		Straight Flush: 9
+		4 of a Kind:    8
+		Full House:     7
+		Flush:          6
+		Straight:       5
+		3 of a Kind:    4
+		2 Pair:         3
+		1 Pair:         2
+		High Card:      1
+	*/
+
+	int counter = 0; //To know where to draw cards from the deck from
+
+	if (score == 1)		// High Card
+	{
+		int max = 0;
+		for(int i = 0; i<5; i++){
+			if(value.at(i) > max)		max = value.at(i); 
+		}
+
+		for(int i = 0; i<5; i++){		//cards from deck not the high card
+			if(value.at(i) < max && counter < 3){
+				cout << "Player " << playerNumber << " discards " << value.at(i) << suit.at(i);
+				value.at(i) = deck.value.at(counter);
+				suit.at(i) = deck.suit.at(counter);
+				cout << " and draws " << deck.value.at(counter) << deck.suit.at(counter) << "." << endl;
+				counter++;
+			}
+		}
+
+		return counter;
+	}
+
+	if (score == 2)		// 1 pair
+	{
+		int pairValue;		// to dectect the value of the 1 pair
+		for(int i = 0; i < bucketVector.size(); i++){
+			if(bucketVector.at(i) == 2)		pairValue = i+1;
+		}
+
+		for(int i = 0; i < 5; i++){
+
+			if(value.at(i) != pairValue){	//swap cards from deck not the 1 pair
+				cout << "Player " << playerNumber << " discards " << value.at(i) << suit.at(i);
+				value.at(i) = deck.value.at(counter);
+				suit.at(i) = deck.suit.at(counter);
+				cout << " and draws " << deck.value.at(counter) << deck.suit.at(counter) << "." << endl;
+				counter++;
+			}
+		}
+
+		return counter;
+	}
+
+	if (score == 3)		// 2 pair
+	{
+		int pairValue1 = 0 , pairValue2 = 0;		// to dectect the value of pair1
+		for(int i = 0; i < bucketVector.size(); i++){
+			if(bucketVector.at(i) == 2  && pairValue1 == 0)		pairValue1 = i+1;
+			if(bucketVector.at(i) == 2 && pairValue1 != 0)		pairValue2 = i+1;
+		}
+
+		for(int i = 0; i < 5; i++){
+
+			if(value.at(i) != pairValue1 && value.at(i) != pairValue2){	//swap cards from deck not either pair
+				cout << "Player " << playerNumber << " discards " << value.at(i) << suit.at(i);
+				value.at(i) = deck.value.at(counter);
+				suit.at(i) = deck.suit.at(counter);
+				cout << " and draws " << deck.value.at(counter) << deck.suit.at(counter) << "." << endl;
+				counter++;
+			}
+		}
+
+		return counter;
+	}
+
+
+	if (score == 4)		// Three of a Kind
+	{
+		int pairValue;		// to dectect the value of the 3 of a kind
+		for(int i = 0; i < bucketVector.size(); i++){
+			if(bucketVector.at(i) == 3)		pairValue = i+1;
+		}
+
+		for(int i = 0; i < 5; i++){
+
+			if(value.at(i) != pairValue){	//swap cards from deck not the 1 pair
+				cout << "Player " << playerNumber << " discards " << value.at(i) << suit.at(i);
+				value.at(i) = deck.value.at(counter);
+				suit.at(i) = deck.suit.at(counter);
+				cout << " and draws " << deck.value.at(counter) << deck.suit.at(counter) << "." << endl;
+				counter++;
+			}
+		}
+
+		return counter;
+	}
+
+	if (score == 8)
+	{
+		int pairValue;		// to dectect the value of the 3 of a kind
+		for(int i = 0; i < bucketVector.size(); i++){
+			if(bucketVector.at(i) == 4)		pairValue = i+1;
+		}
+
+		for(int i = 0; i < 5; i++){
+
+			if(value.at(i) != pairValue){	//swap cards from deck not the 1 pair
+				cout << "Player " << playerNumber << " discards " << value.at(i) << suit.at(i);
+				value.at(i) = deck.value.at(counter);
+				suit.at(i) = deck.suit.at(counter);
+				cout << " and draws " << deck.value.at(counter) << deck.suit.at(counter) << "." << endl;
+				counter++;
+			}
+		}
+
+		return counter;
+	}
+
+	if (score > 4 && score != 8)		// Any hand that incorporates the entire hand [not worth swapping]
+	{
+		cout<< "Player " << playerNumber << " is content with their hand, and does not discard any cards." << endl;	
+		return 0;
+	}
+
 }

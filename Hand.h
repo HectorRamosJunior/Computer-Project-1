@@ -10,18 +10,20 @@
 class Hand {
  
 public:
-	Hand();
-	void print();				//Prints Hand
-	void print(int);			//Prints specific hand element
+	Hand(int i);
 	void printHand();
 
-	void createHand();			//Creates Hands, called within Constructor
 	void addCards(Deck deck, int startIndex);
+	int drawCards(Deck deck);
 	void sortHand(); 
 	void determineHand(); 
+
 	std::vector<int> value;		// Value vector, Vector chosen for easy dynamic manipulation
 	std::vector<char> suit;		// Suit vector, Vector chosen for easy dynamic manipulation
-	int score; 
+	std::vector<int> bucketVector;
+
+	int score, playerNumber; 
+	int suitS, suitD, suitC, suitH;
 	 
 };
 

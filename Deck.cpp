@@ -3,7 +3,7 @@
 #include <time.h>			// for rand
 #include <algorithm>		// for swap function
 #include <math.h>           // function for ceiling and floor that was recommended
-#include <string>           // include string 
+//#include <string>           // include string 
 #include "deck.h"			//includes the header file
 
 using namespace std; 
@@ -70,4 +70,3 @@ void Deck::print() {
 	} 
 	cout << endl << endl << endl;
 }
-
